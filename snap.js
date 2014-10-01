@@ -181,6 +181,7 @@
                 },
                 easeCallback: function(){
                     settings.element.style[cache.vendor+'Transition'] = '';
+                    settings.fixedHeader.style[cache.vendor+'Transition'] = '';
                     cache.translation = action.translate.get.matrix(4);
                     cache.easing = false;
                     clearInterval(cache.animatingInterval);
@@ -192,6 +193,7 @@
 
                     utils.dispatchEvent('animated');
                     utils.events.removeEvent(settings.element, utils.transitionCallback(), action.translate.easeCallback);
+                    utils.events.removeEvent(settings.fixedHeader, utils.transitionCallback(), action.translate.easeCallback);
                 },
                 easeTo: function(n) {
 
@@ -203,23 +205,26 @@
                         cache.easingTo = n;
 
                         settings.element.style[cache.vendor+'Transition'] = 'all ' + settings.transitionSpeed + 's ' + settings.easing;
+                        settings.fixedHeader.style[cache.vendor+'Transition'] = 'all ' + settings.transitionSpeed + 's ' + settings.easing;
 
                         cache.animatingInterval = setInterval(function() {
                             utils.dispatchEvent('animating');
                         }, 1);
-                        
+
                         utils.events.addEvent(settings.element, utils.transitionCallback(), action.translate.easeCallback);
+                        utils.events.addEvent(settings.fixedHeader, utils.transitionCallback(), action.translate.easeCallback);
                         action.translate.x(n);
                     }
                     if(n===0){
                            settings.element.style[cache.vendor+'Transform'] = '';
+                           settings.fixedHeader.style[cache.vendor+'Transform'] = '';
                        }
                 },
                 x: function(n) {
                     if( (settings.disable==='left' && n>0) ||
                         (settings.disable==='right' && n<0)
                     ){ return; }
-                    
+
                     if( !settings.hyperextensible ){
                         if( n===settings.maxPosition || n>settings.maxPosition ){
                             n=settings.maxPosition;
@@ -227,20 +232,25 @@
                             n=settings.minPosition;
                         }
                     }
-                    
+
                     n = parseInt(n, 10);
                     if(isNaN(n)){
                         n = 0;
                     }
+                    var t = 0;
 
                     if( utils.canTransform() ){
                         var theTranslate = 'translate3d(' + n + 'px, 0,0)';
+                        var theFixedTranslate = 'translate3d(' + n + 'px, ' + t + 'px ,0)';
                         settings.element.style[cache.vendor+'Transform'] = theTranslate;
+                        settings.fixedHeader.style[cache.vendor+'Transform'] = theFixedTranslate;
                     } else {
                         settings.element.style.width = (win.innerWidth || doc.documentElement.clientWidth)+'px';
 
                         settings.element.style.left = n+'px';
                         settings.element.style.right = '';
+                        settings.fixedHeader.style.left = n+'px';
+                        settings.fixedHeader.style.right = '';
                     }
                 }
             },
@@ -251,37 +261,44 @@
                     utils.events.addEvent(settings.element, utils.eventType('down'), action.drag.startDrag);
                     utils.events.addEvent(settings.element, utils.eventType('move'), action.drag.dragging);
                     utils.events.addEvent(settings.element, utils.eventType('up'), action.drag.endDrag);
+                    utils.events.addEvent(settings.fixedHeader, utils.eventType('down'), action.drag.startDrag);
+                    utils.events.addEvent(settings.fixedHeader, utils.eventType('move'), action.drag.dragging);
+                    utils.events.addEvent(settings.fixedHeader, utils.eventType('up'), action.drag.endDrag);
                 },
                 stopListening: function() {
                     utils.events.removeEvent(settings.element, utils.eventType('down'), action.drag.startDrag);
                     utils.events.removeEvent(settings.element, utils.eventType('move'), action.drag.dragging);
                     utils.events.removeEvent(settings.element, utils.eventType('up'), action.drag.endDrag);
+                    utils.events.removeEvent(settings.fixedHeader, utils.eventType('down'), action.drag.startDrag);
+                    utils.events.removeEvent(settings.fixedHeader, utils.eventType('move'), action.drag.dragging);
+                    utils.events.removeEvent(settings.fixedHeader, utils.eventType('up'), action.drag.endDrag);
                 },
                 startDrag: function(e) {
                     // No drag on ignored elements
                     var target = e.target ? e.target : e.srcElement,
                         ignoreParent = utils.parentUntil(target, 'data-snap-ignore');
-                    
+
                     if (ignoreParent) {
                         utils.dispatchEvent('ignore');
                         return;
                     }
-                    
-                    
+
+
                     if(settings.dragger){
                         var dragParent = utils.parentUntil(target, settings.dragger);
-                        
+
                         // Only use dragger if we're in a closed state
-                        if( !dragParent && 
-                            (cache.translation !== settings.minPosition && 
+                        if( !dragParent &&
+                            (cache.translation !== settings.minPosition &&
                             cache.translation !== settings.maxPosition
                         )){
                             return;
                         }
                     }
-                    
+
                     utils.dispatchEvent('start');
                     settings.element.style[cache.vendor+'Transition'] = '';
+                    settings.fixedHeader.style[cache.vendor+'Transition'] = '';
                     cache.isDragging = true;
                     cache.hasIntent = null;
                     cache.intentChecked = false;
