@@ -1,0 +1,19 @@
+{
+  "name": "snap",
+  "version": "1.1.0",
+  "description": "A Library for creating beautiful mobile shelfs in Javascript",
+  "main": "snap.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anyroadcom/Snap.js.git"
+  },
+  "author": "AnyRoad",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anyroadcom/Snap.js/issues"
+  },
+  "homepage": "https://github.com/anyroadcom/Snap.js#readme"
+}
