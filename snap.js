@@ -174,7 +174,7 @@ const Snap = function(userOpts) {
                     if (!utils.canTransform()) {
                         return parseInt(settings.element.style.left, 10);
                     } else {
-                        const matrix = win.getComputedStyle(settings.element)[cache.vendor+'Transform'].match(/\((.*)\)/);
+                        let matrix = win.getComputedStyle(settings.element)[cache.vendor+'Transform'].match(/\((.*)\)/);
                         const ieOffset = 8;
                         if (matrix) {
                             matrix = matrix[1].split(',');
